@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AICT Value Tracker</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#032D42;color:#fff;min-height:100vh;padding-bottom:3rem}
+.hdr{background:rgba(2,31,48,0.95);border-bottom:1px solid rgba(255,255,255,0.1);padding:0.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;position:sticky;top:0;z-index:50}
+.tabs{display:flex;gap:0.4rem;flex-wrap:wrap;align-items:center}
+.tab{padding:0.28rem 0.8rem;border-radius:999px;border:1px solid rgba(255,255,255,0.15);background:transparent;color:#94A3B8;font-size:0.72rem;font-weight:500;cursor:pointer;font-family:inherit}
+.tab.on{background:#63DF4E;color:#021F30;border-color:#63DF4E;font-weight:700}
+.mtog{display:flex;background:rgba(255,255,255,0.06);border-radius:999px;padding:0.18rem;border:1px solid rgba(255,255,255,0.1)}
+.mb{padding:0.26rem 0.75rem;border-radius:999px;border:none;background:transparent;color:#64748B;font-size:0.7rem;cursor:pointer;font-family:inherit}
+.mb.on{background:#63DF4E;color:#021F30;font-weight:700}
+.wrap{max-width:920px;margin:0 auto;padding:0 1.25rem}
+.hero{padding:1.75rem 0 1.25rem}
+.htag{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#63DF4E;margin-bottom:0.4rem}
+.hero h1{font-size:clamp(1.4rem,3vw,2rem);font-weight:800;line-height:1.1;margin-bottom:0.5rem}
+.hero h1 span{color:#63DF4E}
+.hero p{font-size:0.9rem;color:#94A3B8;font-weight:300;max-width:38rem}
+.card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:0.875rem;padding:1.25rem;margin-bottom:1rem}
+.sh{display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem}
+.sn{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#63DF4E;color:#021F30;font-size:0.68rem;font-weight:800;flex-shrink:0}
+.st{font-size:0.9rem;font-weight:700}
+label{display:block;font-size:0.68rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#94A3B8;margin-bottom:0.35rem}
+input,select,textarea{width:100%;background:rgba(255,255,255,0.07);border:1.5px solid rgba(255,255,255,0.12);border-radius:0.45rem;padding:0.5rem 0.7rem;color:#fff;font-size:0.875rem;outline:none;font-family:inherit;margin-bottom:0.85rem}
+input:focus,select:focus,textarea:focus{border-color:#63DF4E}
+select option{background:#032D42}
+textarea{resize:vertical;line-height:1.5}
+.pg{display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.85rem}
+.pi{padding:0.28rem 0.75rem;border-radius:999px;border:1.5px solid rgba(255,255,255,0.12);background:transparent;color:#94A3B8;font-size:0.77rem;cursor:pointer;font-family:inherit}
+.pi.on{border-color:#63DF4E;background:rgba(99,223,78,0.12);color:#63DF4E;font-weight:700}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.65rem}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:0.65rem}
+.sc{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:0.65rem;padding:0.85rem 1rem}
+.sc .sl{font-size:0.58rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#64748B;margin-bottom:0.15rem}
+.sc .sv{font-size:1.35rem;font-weight:700;color:#fff;line-height:1.1}
+.sc .ss{font-size:0.68rem;color:#94A3B8;font-weight:300;margin-top:0.15rem}
+.bp{width:100%;padding:0.75rem;border-radius:0.65rem;background:#63DF4E;color:#021F30;border:none;font-size:0.875rem;font-weight:800;cursor:pointer;font-family:inherit}
+.bp:disabled{opacity:0.45;cursor:default}
+.bs{width:100%;padding:0.55rem;border-radius:0.65rem;background:transparent;color:#94A3B8;border:1px solid rgba(255,255,255,0.12);font-size:0.77rem;font-weight:600;cursor:pointer;font-family:inherit;margin-top:0.45rem}
+.bo{padding:0.35rem 0.85rem;border-radius:0.45rem;background:transparent;border:1px solid rgba(255,255,255,0.15);color:#94A3B8;font-size:0.75rem;cursor:pointer;font-family:inherit}
+.bo.red{border-color:rgba(248,113,113,0.3);color:#F87171}
+.fb{background:rgba(99,223,78,0.06);border:1px solid rgba(99,223,78,0.15);border-radius:0.65rem;padding:0.8rem;margin-bottom:1rem;font-family:monospace;font-size:0.75rem;color:#CBD5E1;line-height:1.75}
+.co{border-left:3px solid;border-radius:0 0.4rem 0.4rem 0;padding:0.65rem 0.9rem;font-size:0.8rem;color:#CBD5E1;font-weight:300;line-height:1.5;margin-bottom:0.85rem}
+.co.w{border-color:#FBBF24;background:rgba(251,191,36,0.06)}
+.co.i{border-color:#38BDF8;background:rgba(56,189,248,0.06)}
+hr.d{border:none;border-top:1px solid rgba(255,255,255,0.1);margin:1.1rem 0}
+.ir{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.85rem}
+.ir input{flex:1;margin-bottom:0}
+.ir .sfx{color:#94A3B8;font-size:0.825rem;min-width:28px;white-space:nowrap}
+.bdg{display:inline-block;padding:0.15rem 0.45rem;border-radius:999px;font-size:0.58rem;font-weight:700}
+.bdg.g{background:rgba(99,223,78,0.12);color:#63DF4E}
+.bdg.b{background:rgba(56,189,248,0.12);color:#38BDF8}
+.lhdr{display:grid;grid-template-columns:minmax(0,1fr) 120px 100px 120px 120px 75px 75px 60px;gap:0 6px;padding:0.35rem 0.9rem;border-bottom:1px solid rgba(255,255,255,0.08);margin-bottom:0.2rem}
+.lhdr span{font-size:0.56rem;font-weight:700;text-transform:uppercase;letter-spacing:0.07em;color:#64748B}
+.lrow{display:grid;grid-template-columns:minmax(0,1fr) 120px 100px 120px 120px 75px 75px 60px;gap:0 6px;padding:0.65rem 0.9rem;cursor:pointer;align-items:center;border-radius:0.65rem;margin-bottom:0.25rem;border:1.5px solid rgba(255,255,255,0.08);transition:border-color 0.15s}
+.lrow:hover{background:rgba(255,255,255,0.025)}
+.lrow.open{border-color:#63DF4E;background:rgba(99,223,78,0.03)}
+.exp{padding:1.1rem 0.9rem;border-top:1px solid rgba(255,255,255,0.08)}
+.exph{font-size:0.58rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#64748B;margin-bottom:0.6rem;margin-top:0.85rem}
+.tgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.4rem;margin-bottom:0.85rem}
+.tcell{background:rgba(56,189,248,0.05);border:1px solid rgba(56,189,248,0.12);border-radius:0.4rem;padding:0.45rem 0.65rem}
+.tcell .tl{font-size:0.56rem;color:#38BDF8;font-weight:700;text-transform:uppercase;margin-bottom:0.15rem}
+.tcell .tv{font-size:0.75rem;color:#CBD5E1;font-weight:600;word-break:break-word}
+.scell{background:rgba(99,223,78,0.04);border:1px solid rgba(99,223,78,0.1);border-radius:0.4rem;padding:0.6rem 0.8rem;margin-bottom:0.4rem}
+.scell .sl2{font-size:0.6rem;font-weight:700;text-transform:uppercase;color:#63DF4E;margin-bottom:0.3rem}
+.scell .st2{font-size:0.77rem;color:#CBD5E1;font-weight:300;line-height:1.55;white-space:pre-wrap}
+.art-link-box{background:rgba(56,189,248,0.08);border:1.5px solid rgba(56,189,248,0.3);border-radius:0.5rem;padding:0.55rem 0.85rem;display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem}
+.art-link-box a{color:#38BDF8;font-size:0.82rem;font-weight:600;text-decoration:none;word-break:break-all;flex:1}
+.sbar{display:flex;align-items:center;margin-bottom:1.75rem}
+.sdot{display:flex;flex-direction:column;align-items:center;gap:0.28rem}
+.dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.66rem;font-weight:800;border:2px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#64748B}
+.dot.dn{background:#63DF4E;color:#021F30;border-color:#63DF4E;cursor:pointer}
+.dot.ac{background:rgba(99,223,78,0.2);color:#63DF4E;border-color:#63DF4E}
+.slbl{font-size:0.54rem;color:#64748B;text-align:center;max-width:52px;font-weight:500}
+.slbl.ac{color:#63DF4E;font-weight:700}
+.slbl.dn{color:#CBD5E1}
+.sline{flex:1;height:2px;background:rgba(255,255,255,0.1);margin:0 3px 12px}
+.sline.dn{background:#63DF4E}
+.npick{display:flex;gap:0.35rem;justify-content:center;flex-wrap:wrap;margin-bottom:0.45rem}
+.npick button{width:34px;height:34px;border-radius:0.4rem;border:1.5px solid rgba(255,255,255,0.12);background:rgba(255,255,255,0.04);color:#94A3B8;font-size:0.825rem;cursor:pointer;font-family:inherit}
+.npick button.s{background:#FBBF24;border-color:#FBBF24;color:#021F30;font-weight:800}
+.ccat{background:rgba(255,255,255,0.03);border:2px solid rgba(255,255,255,0.1);border-radius:0.875rem;padding:0.9rem 1.1rem;cursor:pointer;margin-bottom:0.65rem;text-align:left;width:100%;font-family:inherit}
+.ccat.sg{border-color:#63DF4E;background:rgba(99,223,78,0.07)}
+.ccat.sb{border-color:#38BDF8;background:rgba(56,189,248,0.07)}
+.ccat.sa{border-color:#FBBF24;background:rgba(251,191,36,0.07)}
+.stcard{border-radius:0.875rem;padding:1.75rem 1.25rem;text-align:center;margin-bottom:0.85rem}
+.gt{background:rgba(99,223,78,0.06);border:2px solid rgba(99,223,78,0.28);border-radius:0.65rem;padding:0.65rem 0.9rem;display:flex;align-items:center;flex-wrap:wrap;gap:0.85rem;margin-top:0.4rem}
+.fbar{display:flex;align-items:flex-end;gap:0.85rem;flex-wrap:wrap;padding:0.9rem 1.1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);border-radius:0.875rem;margin-bottom:1rem}
+.fbar select{width:auto;margin-bottom:0;min-width:130px;font-size:0.8rem}
+.fbl{font-size:0.58rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#64748B;margin-bottom:0.28rem;display:block}
+.rtt{display:flex;gap:0.35rem;background:rgba(255,255,255,0.04);border-radius:0.5rem;padding:0.2rem;margin-bottom:1rem}
+.rtb{flex:1;padding:0.35rem;border-radius:0.35rem;border:none;font-family:inherit;cursor:pointer;font-size:0.7rem;font-weight:500;background:transparent;color:#64748B}
+.rtb.on{background:#2A4F62;color:#fff;font-weight:700}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <svg xmlns="http://www.w3.org/2000/svg" width="132" height="18" viewBox="0 0 132 20"><path d="M32.022,6.391a5.626,5.626,0,0,0-3.61,1.3V6.523H25.119V19.35h3.425v-8.2a4.073,4.073,0,0,1,3.109-1.588,3.494,3.494,0,0,1,1.374.206V6.479a5.851,5.851,0,0,0-1.005-.088" fill="#fff" fill-rule="evenodd"/><path d="M2.16,15.436a5.369,5.369,0,0,0,3.5,1.269c.922,0,1.633-.45,1.633-1.084,0-1.931-6.191-1.243-6.191-5.369,0-2.459,2.371-3.993,4.9-3.993a7.9,7.9,0,0,1,4.32,1.3L8.72,10.04a4.3,4.3,0,0,0-2.45-.872c-.948,0-1.739.37-1.739,1.031,0,1.666,6.192,1.005,6.192,5.448,0,2.46-2.4,3.967-5.085,3.967A8.815,8.815,0,0,1,.5,17.9Z" fill="#fff" fill-rule="evenodd"/><path d="M23.657,12.817c0-3.57-2.5-6.558-6.034-6.558-3.794,0-6.218,3.12-6.218,6.691A6.4,6.4,0,0,0,18.1,19.614a6.919,6.919,0,0,0,5.243-2.3l-1.95-1.957a4.515,4.515,0,0,1-3.214,1.481A3.36,3.36,0,0,1,14.725,13.8h8.853A5.735,5.735,0,0,0,23.657,12.817Zm-8.774-1.533a2.775,2.775,0,0,1,2.74-2.248,2.552,2.552,0,0,1,2.53,2.248Z" fill="#fff" fill-rule="evenodd"/><polygon points="41.19 14.351 44.694 6.523 48.252 6.523 42.376 19.35 40.005 19.35 34.129 6.523 37.686 6.523 41.19 14.351" fill="#fff" fill-rule="evenodd"/><path d="M51.128.5A2.2,2.2,0,1,1,48.888,2.7,2.2,2.2,0,0,1,51.128.5" fill="#fff" fill-rule="evenodd"/><rect x="49.415" y="6.523" width="3.425" height="12.827" fill="#fff"/><path d="M67,16.731a6.766,6.766,0,0,1-5.8,2.883,6.68,6.68,0,1,1,.026-13.355,6.808,6.808,0,0,1,5.375,2.565l-2.424,2.142a3.7,3.7,0,0,0-2.951-1.534A3.433,3.433,0,0,0,57.78,12.95a3.383,3.383,0,0,0,3.531,3.49,3.741,3.741,0,0,0,3.056-1.692Z" fill="#fff" fill-rule="evenodd"/><path d="M79.442,17.313a6.918,6.918,0,0,1-5.243,2.3,6.4,6.4,0,0,1-6.692-6.664c0-3.571,2.424-6.691,6.218-6.691,3.53,0,6.033,2.988,6.033,6.558a5.635,5.635,0,0,1-.079.979H70.826a3.36,3.36,0,0,0,3.452,3.041,4.52,4.52,0,0,0,3.215-1.481Zm-3.188-6.029a2.551,2.551,0,0,0-2.529-2.248,2.774,2.774,0,0,0-2.74,2.248Z" fill="#fff" fill-rule="evenodd"/><path d="M81.12,19.35V6.523h3.293V7.554a5.625,5.625,0,0,1,3.609-1.295,5.747,5.747,0,0,1,4.427,2.063,6.482,6.482,0,0,1,1.317,4.5V19.35H90.341v-6.8a3.11,3.11,0,0,0-.764-2.407,2.69,2.69,0,0,0-1.923-.714,4.076,4.076,0,0,0-3.109,1.587V19.35Z" fill="#fff" fill-rule="evenodd"/><path d="M102.586,6.259A7.5,7.5,0,0,0,97.419,19.21a1.481,1.481,0,0,0,1.926.1,5.355,5.355,0,0,1,6.394,0,1.485,1.485,0,0,0,1.937-.113,7.5,7.5,0,0,0-5.09-12.94M102.542,17.5a3.637,3.637,0,0,1-3.734-3.733,3.734,3.734,0,1,1,7.468,0,3.637,3.637,0,0,1-3.734,3.733" fill="#62d84e" fill-rule="evenodd"/><polygon points="116.788 19.35 114.237 19.35 109.15 6.523 112.57 6.523 115.359 13.853 118.094 6.523 120.952 6.523 123.662 13.853 126.475 6.523 129.896 6.523 124.809 19.35 122.258 19.35 119.523 12.046 116.788 19.35" fill="#fff" fill-rule="evenodd"/><path d="M129.935,17.9h-.289v.543H129.4V16.957h.6a.476.476,0,0,1,.478.478.469.469,0,0,1-.295.432l.338.579h-.268Zm-.289-.219H130a.249.249,0,0,0,0-.5h-.351Z" fill="#fff"/><path d="M129.9,16.348a1.379,1.379,0,1,1-1.378,1.379,1.381,1.381,0,0,1,1.378-1.379m0-.218a1.6,1.6,0,1,0,1.6,1.6,1.6,1.6,0,0,0-1.6-1.6Z" fill="#fff"/></svg>
+  <div class="tabs">
+    <span class="mtog" id="mtog"><button class="mb on" id="mb-s" onclick="setMode('s')">Simple</button><button class="mb" id="mb-a" onclick="setMode('a')">Advanced</button></span>
+    <button class="tab on" id="tb-calc" onclick="showTab('calc')">Calculator</button>
+    <button class="tab" id="tb-guide" onclick="showTab('guide')">Guide</button>
+    <button class="tab" id="tb-log" onclick="showTab('log')">Shared Log (<span id="lc">0</span>)</button>
+  </div>
+</div>
+
+<div class="wrap">
+<div class="hero"><div class="htag">AI Control Tower · Value Template Calculator</div><h1><span>Calculate &amp; Track</span><br>AI Business Value</h1><p id="hsub">Answer three simple questions — no formulas, no jargon.</p></div>
+
+<!-- ═══ SIMPLE MODE ═══ -->
+<div id="pg-simple">
+  <div id="sbar" class="sbar"></div>
+  <div id="sp0a"><div class="card" style="border-color:rgba(56,189,248,0.3)">
+    <div class="sh"><span class="sn" style="background:#38BDF8">1</span><span class="st">Register your AI system</span></div>
+    <div class="co i">Required AICT fields before tracking value.</div>
+    <label>AI System Title *</label><input id="s-title" placeholder="e.g. Claude Event Brief Builder">
+    <label>System Provider *</label><div id="prov-pg" class="pg"></div>
+    <input id="s-prov-o" placeholder="Enter provider name..." style="display:none">
+    <label>Asset Type *</label><div id="atype-pg" class="pg"></div>
+    <div class="g2"><div><label>Business Owner</label><input id="s-biz" placeholder="Director / VP name"></div><div><label>Technical Owner</label><input id="s-tech" placeholder="Tech lead / Architect"></div></div>
+    <div class="g2"><div><label>P5</label><div style="background:rgba(99,223,78,0.06);border:1.5px solid rgba(99,223,78,0.2);border-radius:0.45rem;padding:0.5rem 0.7rem;color:#63DF4E;font-weight:700;margin-bottom:0.85rem">Colin Fleming</div></div><div><label>P5-1</label><input id="s-p51" placeholder="e.g. Adrienne Hartman"></div></div>
+    <label>Artifact / Tool Link (Optional)</label>
+    <input type="url" id="s-alink" placeholder="https://claude.ai/artifacts/...">
+    <div style="font-size:0.72rem;color:#64748B;margin-top:-0.6rem;margin-bottom:0.85rem">Paste the link — it will be clickable in the Shared Log.</div>
+    <button class="bp" onclick="sNext('0b')">Next — Generate Registration Content</button>
+    <button class="bs" onclick="showTab('guide')">Not sure? Open Reference Guide</button>
+  </div></div>
+
+  <div id="sp0b" style="display:none"><div class="card" style="border-color:rgba(56,189,248,0.3)">
+    <div class="sh"><span class="sn" style="background:#38BDF8">2</span><span class="st">Generate AICT registration content</span></div>
+    <p style="font-size:0.875rem;color:#94A3B8;margin-bottom:1rem">Describe your tool in plain English — Claude drafts all 6 required sections.</p>
+    <div id="gi"><label>Describe your AI tool in 3–5 sentences *</label>
+    <textarea id="s-desc" rows="5" placeholder="e.g. I use Claude to build event briefs and pipeline dashboards for AMS Field Marketing. Before AI, each task took 60 minutes. Now Claude drafts it in under 5 minutes. We run about 50–80 tasks per month."></textarea>
+    <div id="ge" style="color:#F87171;font-size:0.77rem;margin-bottom:0.65rem;display:none"></div>
+    <button class="bp" id="bn-gen" onclick="doGen()">Generate with AI</button></div>
+    <div id="ga" style="display:none"></div>
+    <div style="display:flex;gap:0.65rem;margin-top:0.9rem"><button class="bo" onclick="sBack('0a')">Back</button><button class="bp" id="bn-0b" onclick="sNext('1')" disabled style="flex:1">Next — Track Value</button></div>
+  </div></div>
+
+  <div id="sp1" style="display:none"><div class="card" style="border-color:rgba(99,223,78,0.2)">
+    <div class="sh"><span style="font-size:1.5rem">👋</span><span class="st">Confirm your tool details</span></div>
+    <label>AI Tool Name *</label><input id="s-name" placeholder="e.g. Claude Event Brief Builder">
+    <label>Your Name *</label><input id="s-own" placeholder="e.g. Full Name">
+    <label>Your Team / Area (Optional)</label><input id="s-dept" placeholder="e.g. Canada Field Marketing">
+    <button class="bp" onclick="sNext('2')">Next</button>
+    <button class="bs" onclick="showTab('guide')">Not sure? Open Reference Guide</button>
+  </div></div>
+
+  <div id="sp2" style="display:none"><div class="card" style="border-color:rgba(99,223,78,0.2)">
+    <div class="sh"><span style="font-size:1.5rem">🎯</span><span class="st">What did your AI tool mainly help with?</span></div>
+    <p style="font-size:0.875rem;color:#94A3B8;margin-bottom:1rem">Pick the one that fits best.</p>
+    <button class="ccat" id="cc-p" onclick="sCat('Productivity','sg','#63DF4E')"><div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.25rem"><span style="font-size:1.3rem">⚡</span><div><div style="font-weight:800;font-size:0.95rem">Saved my team time</div><div style="font-size:0.77rem;color:#94A3B8">We used AI to work faster</div></div><span id="cc-p-ck" style="display:none;margin-left:auto;color:#63DF4E;font-size:1.1rem">✓</span></div><div style="font-size:0.72rem;color:#64748B;margin-left:2.1rem">e.g. Event briefs, dashboards, exec emails, recap decks</div></button>
+    <button class="ccat" id="cc-a" onclick="sCat('ACV Impact','sb','#38BDF8')"><div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.25rem"><span style="font-size:1.3rem">📈</span><div><div style="font-weight:800;font-size:0.95rem">Helped win or protect deals</div><div style="font-size:0.77rem;color:#94A3B8">AI accelerated pipeline</div></div><span id="cc-a-ck" style="display:none;margin-left:auto;color:#38BDF8;font-size:1.1rem">✓</span></div><div style="font-size:0.72rem;color:#64748B;margin-left:2.1rem">e.g. Account outreach, AI Summit targeting, EBC sequences</div></button>
+    <button class="ccat" id="cc-c" onclick="sCat('Cost Reduction','sa','#FBBF24')"><div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.25rem"><span style="font-size:1.3rem">💰</span><div><div style="font-weight:800;font-size:0.95rem">Replaced work we'd pay for</div><div style="font-size:0.77rem;color:#94A3B8">AI replaced agency/vendor work</div></div><span id="cc-c-ck" style="display:none;margin-left:auto;color:#FBBF24;font-size:1.1rem">✓</span></div><div style="font-size:0.72rem;color:#64748B;margin-left:2.1rem">e.g. Event one-pagers, ROI dashboards, exec decks</div></button>
+    <div style="display:flex;gap:0.65rem"><button class="bo" onclick="sBack('1')">Back</button><button class="bp" id="bn-2" onclick="sNext('3')" disabled style="flex:1">Next</button></div>
+  </div></div>
+
+  <div id="sp3" style="display:none"><div class="card">
+    <div class="sh"><div style="font-size:1.5rem" id="s3e">⚡</div><span class="st">Just three numbers</span></div>
+    <p style="font-size:0.875rem;color:#94A3B8;margin-bottom:1.25rem">That's all we need. Even a rough estimate is fine.</p>
+    <div style="background:rgba(99,223,78,0.04);border-radius:0.75rem;padding:1.1rem;border:1px solid rgba(99,223,78,0.15);margin-bottom:0.85rem">
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.65rem"><span style="background:#63DF4E;color:#021F30;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:0.77rem">1</span><div><div style="font-weight:700;font-size:0.9rem">How many times did your AI tool run this month?</div><div id="q1h" style="font-size:0.77rem;color:#94A3B8;margin-top:0.15rem">Count tasks, documents, emails, or dashboards it helped produce</div></div></div>
+      <div class="ir"><input type="number" id="s-runs" min="0" placeholder="e.g. 320" oninput="chk3()"><span class="sfx" id="s-rsfx">times</span></div>
+    </div>
+    <div style="background:rgba(56,189,248,0.04);border-radius:0.75rem;padding:1.1rem;border:1px solid rgba(56,189,248,0.15);margin-bottom:0.85rem">
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.65rem"><span style="background:#38BDF8;color:#021F30;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:0.77rem">2</span><div><div style="font-weight:700;font-size:0.9rem">How many minutes does it save each time?</div><div id="q2h" style="font-size:0.77rem;color:#94A3B8;margin-top:0.15rem">Before vs. after AI — the difference is your answer</div></div></div>
+      <div class="ir"><input type="number" id="s-mins" min="0" placeholder="e.g. 40" oninput="chk3()"><span class="sfx">minutes</span></div>
+    </div>
+    <div style="background:rgba(251,191,36,0.04);border-radius:0.75rem;padding:1.1rem;border:1px solid rgba(251,191,36,0.15)">
+      <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.65rem"><span style="background:#FBBF24;color:#021F30;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:0.77rem">3</span><div><div style="font-weight:700;font-size:0.9rem">Out of 10 uses, how many were good enough to use directly?</div><div style="font-size:0.77rem;color:#94A3B8;margin-top:0.15rem">Heavy fixes = doesn't count. Minor tweaks = counts.</div></div></div>
+      <div class="npick" id="npk"></div>
+      <div id="pctd" style="text-align:center;font-size:0.77rem;color:#FBBF24;font-weight:600;min-height:1.1rem"></div>
+    </div>
+    <div style="display:flex;gap:0.65rem;margin-top:0.9rem"><button class="bo" onclick="sBack('2')">Back</button><button class="bp" id="bn-3" onclick="sNext('4')" disabled style="flex:1">Show my impact</button></div>
+  </div></div>
+
+  <div id="sp4" style="display:none">
+    <div id="stw"></div>
+    <div class="g3" id="rsc" style="margin-bottom:0.85rem"></div>
+    <div class="card" id="asumm"></div>
+    <button class="bp" id="bn-sav" onclick="saveSim()" style="margin-top:0.5rem">Save to Shared Log</button>
+    <div id="savc" style="display:none"><div style="padding:0.9rem;border-radius:0.65rem;background:rgba(99,223,78,0.1);border:1.5px solid #63DF4E;color:#63DF4E;font-weight:700;text-align:center;margin-top:0.5rem">Saved!</div><button class="bs" onclick="resetSim()">+ Calculate another AI tool</button></div>
+    <div style="display:flex;flex-direction:column;gap:0.4rem;margin-top:0.65rem">
+      <button class="bo" style="width:auto;align-self:flex-start" onclick="sBack('3')">Change my numbers</button>
+      <button class="bo" style="width:auto;align-self:flex-start" onclick="showTab('guide')">Open Reference Guide</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ADVANCED MODE ═══ -->
+<div id="pg-adv" style="display:none">
+  <div class="g2" style="align-items:start">
+    <div>
+      <div class="card"><div class="sh"><span class="sn">1</span><span class="st">AI Asset Information</span></div>
+        <label>Asset Name *</label><input id="a-nm" oninput="advc()" placeholder="e.g. Claude Event Brief Builder">
+        <label>Owner Name *</label><input id="a-ow" oninput="advc()" placeholder="e.g. Full Name">
+        <label>Persona</label><div id="ap-pg" class="pg"></div>
+        <label>Value Category</label><div id="ac-pg" class="pg"></div>
+        <label>Department (Optional)</label><input id="a-dp" oninput="advc()" placeholder="e.g. AMS Marketing Operations">
+        <label>Artifact / Tool Link (Optional)</label><input type="url" id="a-al" oninput="advc()" placeholder="https://claude.ai/artifacts/...">
+        <div style="font-size:0.72rem;color:#64748B;margin-top:-0.6rem;margin-bottom:0.85rem">Paste the link — clickable in the Shared Log.</div>
+        <label>Notes (Optional)</label><textarea id="a-nt" rows="3" oninput="advc()" placeholder="Source of time-saved assumption..."></textarea>
+      </div>
+      <div class="card"><div class="sh"><span class="sn">2</span><span class="st">Core Value Inputs (A × B × C)</span></div>
+        <div class="co w">Enter <strong>actual numbers</strong>, not estimates.</div>
+        <div style="background:rgba(99,223,78,0.04);border-radius:0.65rem;padding:0.9rem;border:1px solid rgba(99,223,78,0.12);margin-bottom:0.75rem"><label style="color:#63DF4E">A — Adoption Count</label><div class="ir"><input type="number" min="0" id="a-ad" oninput="advc()" placeholder="e.g. 1200"><span class="sfx">executions</span></div></div>
+        <div style="background:rgba(56,189,248,0.04);border-radius:0.65rem;padding:0.9rem;border:1px solid rgba(56,189,248,0.12);margin-bottom:0.75rem"><label style="color:#38BDF8">B — Time Saved (min)</label><div class="ir"><input type="number" min="0" id="a-ts" oninput="advc()" placeholder="e.g. 40"><span class="sfx">min/run</span></div></div>
+        <div style="background:rgba(251,191,36,0.04);border-radius:0.65rem;padding:0.9rem;border:1px solid rgba(251,191,36,0.12)"><label style="color:#FBBF24">C — Acceptance Rate (%)</label><div class="ir"><input type="number" min="0" max="100" id="a-ac" oninput="advc()" placeholder="e.g. 90"><span class="sfx">%</span></div></div>
+      </div>
+      <div class="card"><div class="sh"><span class="sn">3</span><span class="st">Financial Conversion</span></div>
+        <div class="co i">Default <strong>$65/hr</strong>. Approved by Finance.</div>
+        <div id="rt-pg" class="pg"></div>
+        <div id="cr-row" class="ir" style="display:none"><span class="sfx">$</span><input type="number" id="a-cr" oninput="advc()" placeholder="e.g. 72"><span class="sfx">/hr</span></div>
+        <div id="rtd" style="font-size:0.77rem;color:#64748B">Active: <strong style="color:#CBD5E1">$65/hr</strong></div>
+      </div>
+    </div>
+    <div style="position:sticky;top:68px">
+      <div class="card"><div class="sh"><span class="sn">4</span><span class="st">Live Results</span></div>
+        <div id="res-e" style="text-align:center;padding:1.75rem;color:#64748B"><div style="font-size:1.75rem;margin-bottom:0.4rem">📊</div>Fill Sections 1–3 to see results</div>
+        <div id="res-c" style="display:none"></div>
+      </div>
+      <div class="card">
+        <div style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#63DF4E;margin-bottom:0.9rem">Reference Guide</div>
+        <div class="rtt"><button class="rtb on" onclick="rTab('rf',this)">Field Definitions</button><button class="rtb" onclick="rTab('rc',this)">Value Categories</button></div>
+        <div id="rf"></div><div id="rc" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ GUIDE TAB ═══ -->
+<div id="pg-guide" style="display:none">
+  <div style="max-width:56rem;margin:0 auto"><div class="card">
+    <div style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#63DF4E;margin-bottom:0.9rem">Reference Guide</div>
+    <div class="rtt"><button class="rtb on" onclick="rTab2('rf2',this)">Field Definitions</button><button class="rtb" onclick="rTab2('rc2',this)">Value Categories</button></div>
+    <div id="rf2"></div><div id="rc2" style="display:none"></div>
+  </div></div>
+</div>
+
+<!-- ═══ LOG TAB ═══ -->
+<div id="pg-log" style="display:none">
+  
+  </div>
+
+  <div id="sync-bar" style="background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.2);border-radius:0.5rem;padding:0.5rem 0.9rem;margin-bottom:0.75rem;font-size:0.77rem;color:#94A3B8;display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
+    <span id="sync-dot" style="width:8px;height:8px;border-radius:50%;background:#FBBF24;flex-shrink:0;display:inline-block"></span>
+    <span id="sync-msg">Connecting to shared storage...</span>
+    <button onclick="refreshEntries()" style="margin-left:auto;padding:0.25rem 0.65rem;border-radius:0.4rem;background:rgba(99,223,78,0.12);border:1px solid rgba(99,223,78,0.3);color:#63DF4E;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:inherit">↻ Refresh</button>
+    <button onclick="testConnection()" style="padding:0.25rem 0.65rem;border-radius:0.4rem;background:rgba(56,189,248,0.12);border:1px solid rgba(56,189,248,0.3);color:#38BDF8;font-size:0.72rem;font-weight:700;cursor:pointer;font-family:inherit">🔧 Test Connection</button>
+  </div>
+  <div id="test-result" style="display:none;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.15);border-radius:0.5rem;padding:0.75rem 0.9rem;margin-bottom:0.75rem;font-size:0.75rem;font-family:monospace;color:#CBD5E1;white-space:pre-wrap;max-height:200px;overflow-y:auto"></div>
+  <div class="g4" id="log-sc" style="margin-bottom:1rem"></div>
+  <div class="fbar">
+    <div><span class="fbl">Month</span><select id="f-mo" onchange="renderLog()"><option>All</option></select></div>
+    <div><span class="fbl">Owner</span><select id="f-ow" onchange="renderLog()"><option>All</option></select></div>
+    <div><span class="fbl">Value Category</span><select id="f-ct" onchange="renderLog()"><option>All</option><option>Productivity</option><option>ACV Impact</option><option>Cost Reduction</option></select></div>
+    <button id="btn-clf" class="bo red" style="display:none" onclick="clf()">Clear filters</button>
+    <button onclick="dlCSV()" style="margin-left:auto;padding:0.4rem 1rem;border-radius:0.5rem;background:rgba(99,223,78,0.12);border:1.5px solid rgba(99,223,78,0.3);color:#63DF4E;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:inherit">⬇ Download CSV</button>
+  </div>
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
+      <div><div style="font-weight:700;font-size:0.95rem">Shared Submission Log</div><div style="font-size:0.77rem;color:#94A3B8;font-weight:300;margin-top:0.15rem">Click any row to expand full details</div></div>
+      <span id="eb" class="bdg g">0 entries</span>
+    </div>
+    <div class="lhdr"><span>Use Case Name</span><span>Value Category</span><span>Submitted On</span><span>Business Owner</span><span>Technical Owner</span><span>Monthly $</span><span>Annual $</span><span>EE</span></div>
+    <div id="lr"></div>
+    <div id="le" style="text-align:center;padding:1.75rem;color:#64748B;font-size:0.875rem">No entries yet — fill the calculator and save</div>
+    <div id="gtot" class="gt" style="display:none"><span id="gtl" style="font-weight:800;color:#63DF4E;font-size:0.78rem;flex:1">GRAND TOTAL</span><div id="gtv" style="display:flex;gap:1.25rem"></div></div>
+  </div>
+</div>
+
+<div style="padding:2rem 0;text-align:center;font-size:0.72rem;color:#334155">© 2026 ServiceNow, Inc. · AICT Value Tracker · AMS MOps &amp; Field Marketing · Internal use only</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// LAYER 1 — STATIC DATA
+// ═══════════════════════════════════════════════════
+var PROVS=['Claude (Anthropic)','NOW LLM','OpenAI / GPT','Google Gemini','Moveworks','Microsoft Copilot','Copy.ai','Other'];
+var ATYPES=['Generative AI','Agentic AI','Automation','Classic AI','Classification','Conversational AI','Foundational Services','Predictive AI','Prescriptive AI','Search / VA AI','Snowflake AI Services'];
+var SECK=['description','shortDescription','intendedUse','problemStatement','businessObjectives','expectedOutcomes'];
+var SECL=['Description','Short Description','Intended Use','Problem Statement','Business Objectives','Expected Outcomes'];
+var FDEFS=[
+  {t:'A — Adoption Count',d:'How many times the AI executed this month. Your monthly PA indicator in AICT.'},
+  {t:'B — Time Saved (min)',d:'Minutes saved per single AI execution. Set once during your Assumptions Workshop.'},
+  {t:'C — Acceptance Rate (%)',d:'% of AI outputs accepted without major rework. Be conservative — use validated actuals.'},
+  {t:'Hourly Rate',d:'Fully-loaded cost of one employee hour. Default $65/hr. Approved by Finance.'},
+  {t:'Employee Equivalent (EE)',d:'Annual hours saved ÷ 2,080 hrs/FTE. FTE capacity freed by AI.'},
+  {t:'PA Indicator',d:'Submit monthly actuals by the 10th of each month.'}
+];
+var RMAP={Productivity:65,'ACV Impact':85,'Cost Reduction':150};
+
+// ═══════════════════════════════════════════════════
+// LAYER 2 — SHARED STORAGE (Google Sheets backend)
+// Fully separated from UI. All functions are async.
+// ═══════════════════════════════════════════════════
+var GS_URL = 'https://script.google.com/macros/s/AKfycbzf6znYrWpOjqBn3D_MaraJBk3R6HOTuLh2K2h4IWxXx2_jNbwMRbwtLdjQlXUQoNgC/exec';
+
+var Storage = {
+  // Load the saved Google Sheets URL from localStorage
+  init: function() {
+    // Use hardcoded team URL — override with localStorage only if someone has set a custom one
+    var saved = localStorage.getItem('aict_gs_url');
+    if (saved && saved !== GS_URL) GS_URL = saved;
+  },
+
+  // Save the URL and test the connection
+  connect: function(url) {
+    GS_URL = url.trim();
+    localStorage.setItem('aict_gs_url', GS_URL);
+    Storage.fetchAll().then(function(data) {
+      if (data !== null) {
+      } else {
+      }
+    });
+  },
+
+  // Fetch all entries from Google Sheets (returns array or null on error)
+  fetchAll: async function() {
+    if (!GS_URL) return null;
+    try {
+      var res = await fetch(GS_URL + '?t=' + Date.now(), {method:'GET', mode:'cors', credentials:'omit'});
+      if (!res.ok) return null;
+      var data = await res.json();
+      if (!Array.isArray(data)) return null;
+      // Normalise types
+      data.forEach(function(e) {
+        if (typeof e.sections === 'string') {
+          try { e.sections = JSON.parse(e.sections); } catch(x) { e.sections = {}; }
+        }
+        ['a','b','c','rate','hrSavedMonthly','valueMonthly','hrSavedAnnual','valueAnnual','ee'].forEach(function(k){
+          e[k] = parseFloat(e[k]) || 0;
+        });
+      });
+      return data.sort(function(a,b){ return new Date(b.submittedAt) - new Date(a.submittedAt); });
+    } catch(e) { return null; }
+  },
+
+  // Save a single entry to Google Sheets (also writes local fallback)
+  save: async function(entry) {
+    // Always write to localStorage as fallback
+    var local = Storage._getLocal();
+    local.unshift(entry);
+    Storage._setLocal(local);
+    if (!GS_URL) return;
+    // Use a hidden iframe + form POST — bypasses CORS entirely
+    return new Promise(function(resolve) {
+      try {
+        var payload = Object.assign({}, entry, { sections: JSON.stringify(entry.sections || {}) });
+        var iframe = document.createElement('iframe');
+        iframe.name = 'gs_submit_' + Date.now();
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        var form = document.createElement('form');
+        form.method = 'POST';
+        form.action = GS_URL;
+        form.target = iframe.name;
+        form.style.display = 'none';
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'payload';
+        input.value = JSON.stringify({ action: 'save', entry: payload });
+        form.appendChild(input);
+        document.body.appendChild(form);
+        iframe.onload = function() {
+          document.body.removeChild(form);
+          document.body.removeChild(iframe);
+          resolve('ok');
+        };
+        setTimeout(function() {
+          try { document.body.removeChild(form); document.body.removeChild(iframe); } catch(x) {}
+          resolve('timeout');
+        }, 5000);
+        form.submit();
+      } catch(e) {
+        console.error('Save to Sheets failed:', e);
+        resolve('error');
+      }
+    });
+  },
+
+  // Delete an entry from Google Sheets
+  delete: async function(id) {
+    var local = Storage._getLocal().filter(function(e){ return e.id !== id; });
+    Storage._setLocal(local);
+    if (!GS_URL) return;
+    try {
+      var iframe = document.createElement('iframe');
+      iframe.name = 'gs_del_' + Date.now();
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+      var form = document.createElement('form');
+      form.method = 'POST';
+      form.action = GS_URL;
+      form.target = iframe.name;
+      form.style.display = 'none';
+      var input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = 'payload';
+      input.value = JSON.stringify({ action: 'delete', id: id });
+      form.appendChild(input);
+      document.body.appendChild(form);
+      setTimeout(function() {
+        try { document.body.removeChild(form); document.body.removeChild(iframe); } catch(x) {}
+      }, 3000);
+      form.submit();
+    } catch(e) {}
+  },
+
+  // Load entries — Sheets first, localStorage fallback
+  load: async function() {
+    var remote = await Storage.fetchAll();
+    if (remote && remote.length > 0) {
+      Storage._setLocal(remote);
+      return remote;
+    }
+    return Storage._getLocal();
+  },
+
+  _getLocal: function() {
+    try { return JSON.parse(localStorage.getItem('aict_entries') || '[]'); } catch(e) { return []; }
+  },
+  _setLocal: function(data) {
+    try { localStorage.setItem('aict_entries', JSON.stringify(data)); } catch(e) {}
+  },
+  _updateStatus: function(state, label) {
+    var dot = document.getElementById('sync-dot');
+    var msg = document.getElementById('sync-msg');
+    if (dot) dot.style.background = state === 'connected' ? '#63DF4E' : state === 'amber' ? '#FBBF24' : '#F87171';
+    if (msg) msg.textContent = label;
+  }
+};
+
+// ═══════════════════════════════════════════════════
+// LAYER 3 — CALCULATION ENGINE (pure functions)
+// ═══════════════════════════════════════════════════
+function calv(a,b,c,r){
+  var mM=a*b*(c/100), hM=mM/60, vM=hM*r, hA=hM*12, vA=hA*r, ee=hA/2080;
+  return {a:a,b:b,c:c,r:r,mM:mM,hM:hM,vM:vM,hA:hA,vA:vA,ee:ee};
+}
+function mkEntry(fields, res){
+  return {
+    id: crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
+    submittedAt: new Date().toISOString(),
+    assetName: fields.assetName||'', ownerName: fields.ownerName||'',
+    persona: fields.persona||'Fulfiller', category: fields.category||'',
+    department: fields.department||'', artifactLink: fields.artifactLink||'',
+    a:res.a, b:res.b, c:res.c, rate:res.r,
+    hrSavedMonthly:res.hM, valueMonthly:res.vM,
+    hrSavedAnnual:res.hA, valueAnnual:res.vA, ee:res.ee,
+    taxTitle:fields.taxTitle||'', taxProvider:fields.taxProvider||'',
+    taxAssetType:fields.taxAssetType||'', taxBizOwner:fields.taxBizOwner||'',
+    taxTechOwner:fields.taxTechOwner||'', taxP5:'Colin Fleming',
+    taxP51:fields.taxP51||'', sections:fields.sections||{}
+  };
+}
+
+// ═══════════════════════════════════════════════════
+// LAYER 4 — FORMAT HELPERS
+// ═══════════════════════════════════════════════════
+function fu(n){return isFinite(n)?'$'+Math.round(n).toLocaleString('en-US'):'—'}
+function ffe(n){return isFinite(n)?n.toFixed(2):'—'}
+function fd(s){if(!s)return'—';return new Date(s).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+function cc(cat){
+  if(cat==='Productivity') return {c:'#63DF4E',bg:'rgba(99,223,78,0.12)'};
+  if(cat==='ACV Impact')   return {c:'#38BDF8',bg:'rgba(56,189,248,0.12)'};
+  if(cat==='Cost Reduction')return {c:'#FBBF24',bg:'rgba(251,191,36,0.12)'};
+  return {c:'#94A3B8',bg:'rgba(255,255,255,0.08)'};
+}
+function el(id){return document.getElementById(id)}
+function cv(id){return parseFloat((el(id)||{}).value)||0}
+function show(id){var e=el(id);if(e)e.style.display='block'}
+function hide(id){var e=el(id);if(e)e.style.display='none'}
+function showFlex(id){var e=el(id);if(e)e.style.display='flex'}
+function setText(id,t){var e=el(id);if(e)e.textContent=t}
+function setHTML(id,h){var e=el(id);if(e)e.innerHTML=h}
+
+// ═══════════════════════════════════════════════════
+// LAYER 5 — APP STATE
+// ═══════════════════════════════════════════════════
+var entries=[], sd={}, selCat='', selN=0, genSec={};
+var advCat='Productivity', advPersona='Fulfiller', advRate=65, advRK='65';
+
+// ═══════════════════════════════════════════════════
+// LAYER 6 — TAB & MODE NAVIGATION
+// ═══════════════════════════════════════════════════
+function showTab(t){
+  ['pg-simple','pg-adv','pg-guide','pg-log'].forEach(function(id){
+    var e=el(id); if(e) e.style.display='none';
+  });
+  document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('on')});
+  var isS = el('mb-s') && el('mb-s').classList.contains('on');
+  if(t==='calc'){
+    var target = isS ? 'pg-simple' : 'pg-adv';
+    var e=el(target); if(e) e.style.display='block';
+  } else {
+    var e2=el('pg-'+t); if(e2) e2.style.display='block';
+  }
+  var tb=el('tb-'+t); if(tb) tb.classList.add('on');
+  var mtog=el('mtog'); if(mtog) mtog.style.display=t==='calc'?'flex':'none';
+  var subs={calc:isS?'Answer three simple questions — no formulas, no jargon.':'Full AICT calculator — the model handles all the math.',guide:'Field definitions, value category explanations, and examples.',log:'All shared entries — click any row to expand full details.'};
+  setText('hsub', subs[t]||subs.calc);
+  if(t==='log'){ updFilt(); renderLog(); }
+}
+
+function setMode(m){
+  var mbs=el('mb-s'), mba=el('mb-a');
+  if(mbs) mbs.classList.toggle('on',m==='s');
+  if(mba) mba.classList.toggle('on',m==='a');
+  var pgs=el('pg-simple'), pga=el('pg-adv');
+  if(m==='s'){ if(pgs)pgs.style.display='block'; if(pga)pga.style.display='none'; setText('hsub','Answer three simple questions — no formulas, no jargon.'); }
+  else { if(pga)pga.style.display='block'; if(pgs)pgs.style.display='none'; setText('hsub','Full AICT calculator — the model handles all the math.'); }
+}
+
+// ═══════════════════════════════════════════════════
+// LAYER 7 — REFERENCE GUIDE RENDERING
+// ═══════════════════════════════════════════════════
+function buildRef(){
+  var fh=FDEFS.map(function(f){return'<div style="margin-bottom:0.75rem;padding-bottom:0.75rem;border-bottom:1px solid rgba(255,255,255,0.08)"><div style="font-weight:700;font-size:0.78rem;color:#fff;margin-bottom:0.15rem">'+f.t+'</div><div style="font-size:0.72rem;color:#94A3B8;font-weight:300;line-height:1.5">'+f.d+'</div></div>'}).join('')+'<div style="padding:0.65rem 0.85rem;background:rgba(56,189,248,0.06);border-left:3px solid #38BDF8;font-size:0.77rem;color:#CBD5E1;line-height:1.5"><strong style="color:#38BDF8">Monthly reminder:</strong> Submit PA indicator actuals by the <strong style="color:#fff">10th of each month</strong>.</div>';
+  var cats=[{id:'Productivity',e:'⚡',c:'#63DF4E',def:'Efficiency gains — time saved by employees. Use internal analyst rate ($65/hr).',eg:'A=320 tasks × B=40 min × C=88% = 187.7 hrs → $12,203/mo @ $65/hr'},{id:'ACV Impact',e:'📈',c:'#38BDF8',def:'Revenue generated or protected through AI-assisted marketing. Use senior marketer rate ($85/hr).',eg:'A=45 accounts × B=55 min × C=80% = 33 hrs → $2,805/mo @ $85/hr'},{id:'Cost Reduction',e:'💰',c:'#FBBF24',def:'Direct cost avoided — agency or vendor spend replaced by AI. Use external billing rate ($100–$150/hr).',eg:'A=12 deliverables × B=180 min × C=92% = 33.1 hrs → $4,968/mo @ $150/hr'}];
+  var ch=cats.map(function(c){return'<div style="background:'+c.c+'0d;border:1.5px solid '+c.c+'40;border-radius:0.65rem;padding:0.9rem;margin-bottom:0.65rem"><div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.4rem"><span style="font-size:14px">'+c.e+'</span><span style="font-weight:800;color:'+c.c+'">'+c.id+'</span></div><p style="font-size:0.75rem;color:#CBD5E1;font-weight:300;line-height:1.5;margin-bottom:0.55rem">'+c.def+'</p><div style="background:rgba(0,0,0,0.2);border-radius:0.35rem;padding:0.45rem 0.7rem;font-family:monospace;font-size:0.7rem;color:#fff;font-weight:600">'+c.eg+'</div></div>'}).join('');
+  ['rf','rf2'].forEach(function(id){setHTML(id,fh)});
+  ['rc','rc2'].forEach(function(id){setHTML(id,ch)});
+}
+function rTab(w,btn){btn.closest('.card').querySelectorAll('.rtb').forEach(function(b){b.classList.remove('on')});btn.classList.add('on');var rf=el('rf'),rc=el('rc');if(rf)rf.style.display=w==='rf'?'block':'none';if(rc)rc.style.display=w==='rf'?'none':'block';}
+function rTab2(w,btn){btn.closest('.card').querySelectorAll('.rtb').forEach(function(b){b.classList.remove('on')});btn.classList.add('on');var rf2=el('rf2'),rc2=el('rc2');if(rf2)rf2.style.display=w==='rf2'?'block':'none';if(rc2)rc2.style.display=w==='rf2'?'none':'block';}
+
+// ═══════════════════════════════════════════════════
+// LAYER 8 — SIMPLE MODE WIZARD
+// ═══════════════════════════════════════════════════
+var STEPS=[{k:'0a',l:'Register AI'},{k:'0b',l:'AI Draft'},{k:'1',l:'About Tool'},{k:'2',l:'Category'},{k:'3',l:'3 Numbers'},{k:'4',l:'Impact'}];
+
+function mkSBar(cur){
+  var si=STEPS.findIndex(function(s){return s.k===cur});
+  var bar=el('sbar'); if(!bar)return; bar.innerHTML='';
+  STEPS.forEach(function(s,i){
+    var done=i<si, ac=s.k===cur;
+    var div=document.createElement('div'); div.className='sdot';
+    var d=document.createElement('div'); d.className='dot'+(done?' dn':ac?' ac':'');
+    d.textContent=done?'✓':(i+1);
+    if(done)d.onclick=(function(k){return function(){goStep(k)}})(s.k);
+    var lb=document.createElement('div'); lb.className='slbl'+(ac?' ac':done?' dn':''); lb.textContent=s.l;
+    div.appendChild(d); div.appendChild(lb); bar.appendChild(div);
+    if(i<STEPS.length-1){var ln=document.createElement('div');ln.className='sline'+(done?' dn':'');bar.appendChild(ln)}
+  });
+}
+
+function goStep(to){
+  document.querySelectorAll('.sp, [id^="sp"]').forEach(function(e){ if(e.id&&e.id.startsWith('sp')) e.style.display='none'; });
+  var e=el('sp'+to.replace('.',''));if(e)e.style.display='block';
+  mkSBar(to);
+}
+
+function mkPills(id,opts,sel,cb){
+  var e=el(id); if(!e)return; e.innerHTML='';
+  opts.forEach(function(o){
+    var b=document.createElement('button'); b.className='pi'; b.textContent=o;
+    if(o===sel)b.classList.add('on');
+    b.onclick=function(){e.querySelectorAll('.pi').forEach(function(p){p.classList.remove('on')});b.classList.add('on');cb(o)};
+    e.appendChild(b);
+  });
+}
+
+function mkNumPick(){
+  var e=el('npk'); if(!e)return; e.innerHTML='';
+  for(var i=1;i<=10;i++){(function(n){
+    var b=document.createElement('button'); b.textContent=n;
+    if(n===selN)b.classList.add('s');
+    b.onclick=function(){selN=n;e.querySelectorAll('button').forEach(function(x){x.classList.remove('s')});b.classList.add('s');setText('pctd',n+' out of 10 = '+(n*10)+'% success rate');chk3()};
+    e.appendChild(b);
+  })(i)}
+}
+
+function chk3(){var ok=cv('s-runs')>0&&cv('s-mins')>0&&selN>0;var b=el('bn-3');if(b)b.disabled=!ok}
+
+function sCat(id,cls,col){
+  selCat=id;
+  ['cc-p','cc-a','cc-c'].forEach(function(k){var e=el(k);if(e)e.className='ccat';var ck=el(k+'-ck');if(ck)ck.style.display='none'});
+  var map={Productivity:'cc-p','ACV Impact':'cc-a','Cost Reduction':'cc-c'};
+  var k=map[id]; if(k){var e=el(k);if(e)e.classList.add(cls);var ck=el(k+'-ck');if(ck)ck.style.display='inline'}
+  var b=el('bn-2');if(b)b.disabled=false;
+  var H={Productivity:{q1:'Count tasks, documents, emails, or dashboards it helped produce',q2:'Before vs. after AI — the difference is your answer',sfx:'times',e:'⚡'},'ACV Impact':{q1:'Count accounts or deals where AI helped build outreach',q2:'Minutes of research and messaging prep saved per account',sfx:'accounts',e:'📈'},'Cost Reduction':{q1:'Count deliverables AI produced instead of an agency',q2:'How long would an agency charge per deliverable? (in minutes)',sfx:'deliverables',e:'💰'}};
+  var h=H[id]; if(h){setText('q1h',h.q1);setText('q2h',h.q2);setText('s-rsfx',h.sfx);setText('s3e',h.e)}
+}
+
+function sNext(to){
+  if(to==='0b'){
+    var t=(el('s-title').value||'').trim(),pr=document.querySelector('#prov-pg .pi.on'),at=document.querySelector('#atype-pg .pi.on');
+    if(!t||!pr||!at){alert('Please fill Title, System Provider, and Asset Type.');return}
+    if(pr.textContent==='Other'&&!(el('s-prov-o').value||'').trim()){alert('Please enter provider name.');return}
+    sd.taxTitle=t;sd.taxProvider=pr.textContent==='Other'?el('s-prov-o').value.trim():pr.textContent;
+    sd.taxAssetType=at.textContent;sd.taxBizOwner=(el('s-biz').value||'').trim();
+    sd.taxTechOwner=(el('s-tech').value||'').trim();sd.taxP51=(el('s-p51').value||'').trim();
+    sd.artLink=(el('s-alink').value||'').trim();
+  }
+  if(to==='1'){
+    if(Object.keys(genSec).length===0){alert('Please generate your AICT sections first.');return}
+    var n=el('s-name');if(n&&!n.value.trim())n.value=sd.taxTitle||'';
+  }
+  if(to==='2'){
+    var nm=(el('s-name').value||'').trim(),ow=(el('s-own').value||'').trim();
+    if(!nm||!ow){alert('Please fill tool name and your name.');return}
+    sd.name=nm;sd.owner=ow;sd.dept=(el('s-dept').value||'').trim();
+  }
+  if(to==='3'){if(!selCat){alert('Please select a category.');return}}
+  if(to==='4'){
+    var r=cv('s-runs'),m=cv('s-mins');if(!r||!m||!selN){alert('Please fill all three numbers.');return}
+    sd.runs=r;sd.mins=m;sd.n=selN;buildResult();
+  }
+  goStep(to);
+}
+function sBack(to){goStep(to)}
+
+// ═══════════════════════════════════════════════════
+// LAYER 9 — AI SECTION GENERATION
+// ═══════════════════════════════════════════════════
+async function doGen(){
+  var d=(el('s-desc').value||'').trim();if(!d){alert('Please describe your tool first.');return}
+  var btn=el('bn-gen');btn.textContent='Drafting sections...';btn.disabled=true;
+  var ge=el('ge');if(ge)ge.style.display='none';
+  try{
+    var res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:'You are an AICT registration assistant at ServiceNow. Generate all 6 sections. Return ONLY valid JSON, no markdown.\n\nTitle: '+(sd.taxTitle||'N/A')+'\nProvider: '+(sd.taxProvider||'N/A')+'\nAsset Type: '+(sd.taxAssetType||'N/A')+'\nDescription: '+d+'\n\nJSON: {"description":"...","shortDescription":"...","intendedUse":"...","problemStatement":"...","businessObjectives":"...","expectedOutcomes":"..."}'}]})});
+    var data=await res.json();
+    var raw=data.content.map(function(b){return b.text||''}).join('').replace(/```json|```/g,'').trim();
+    genSec=JSON.parse(raw);
+    var h='<div style="background:rgba(56,189,248,0.06);border:1px solid rgba(56,189,248,0.2);border-radius:0.4rem;padding:0.6rem 0.8rem;font-size:0.77rem;color:#CBD5E1;margin-bottom:0.85rem">All 6 sections generated — review and edit below.</div>';
+    SECK.forEach(function(k,i){h+='<div style="margin-bottom:0.65rem"><label>'+SECL[i]+'</label><textarea rows="'+(k==='shortDescription'?2:4)+'" id="gs-'+k+'">'+(genSec[k]||'').replace(/</g,'&lt;')+'</textarea></div>'});
+    h+='<button class="bo" onclick="genSec={};el(\'gi\').style.display=\'block\';el(\'ga\').style.display=\'none\'">Re-enter and regenerate</button>';
+    setHTML('ga',h);show('ga');hide('gi');
+    var b0b=el('bn-0b');if(b0b)b0b.disabled=false;
+  }catch(e){
+    if(ge){ge.textContent='Generation failed — please try again.';ge.style.display='block';}
+    btn.textContent='Generate with AI';btn.disabled=false;
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// LAYER 10 — RESULT BUILDING (Simple Mode Step 4)
+// ═══════════════════════════════════════════════════
+function buildResult(){
+  var r=sd.runs,m=sd.mins,c=(sd.n/10)*100,rate=RMAP[selCat]||65;
+  var res=calv(r,m,c,rate);sd.res=res;
+  var col=cc(selCat).c;
+  var ST={
+    Productivity:{h:'Your AI tool saved your team '+Math.round(res.hM)+' hours this month',d:'That\'s '+fu(res.vM)+' worth of analyst time — roughly '+(res.hM/40).toFixed(1)+' weeks of work — freed up for higher-value activities.',a:'Annualised: '+fu(res.vA)+'/year — equivalent to '+res.ee.toFixed(2)+' FTEs.'},
+    'ACV Impact':{h:'Your AI outreach freed up '+Math.round(res.hM)+' hours of senior marketer time',d:'That\'s '+fu(res.vM)+' of strategic account work this month — redirected from manual research to relationship-building.',a:'Annualised: '+fu(res.vA)+'/year — equivalent to '+res.ee.toFixed(2)+' senior marketer FTEs.'},
+    'Cost Reduction':{h:'Your AI tool avoided '+fu(res.vM)+' in agency or vendor spend',d:Math.round(res.hM)+' hours of external billable work was replaced — deliverables that previously required agency engagement.',a:'Annualised: '+fu(res.vA)+'/year in avoided external spend — equivalent to '+res.ee.toFixed(2)+' FTEs.'}
+  };
+  var st=ST[selCat]||ST.Productivity;
+  setHTML('stw','<div class="stcard" style="border:2px solid '+col+'40;background:'+col+'0d"><div style="font-size:24px;margin-bottom:0.6rem">🎉</div><h2 style="color:'+col+';font-size:1.25rem;font-weight:800;line-height:1.2;margin-bottom:0.6rem">'+st.h+'</h2><p style="font-size:0.9rem;color:#CBD5E1;font-weight:300;line-height:1.6;max-width:32rem;margin:0 auto 0.4rem">'+st.d+'</p><p style="font-size:0.825rem;color:#94A3B8;font-weight:300;font-style:italic">'+st.a+'</p></div>');
+  setHTML('rsc',[{l:'Hours saved\nthis month',v:Math.round(res.hM)+' hrs',c:'#38BDF8'},{l:'Value\nthis month',v:fu(res.vM),c:col},{l:'Value\nper year',v:fu(res.vA),c:col}].map(function(s){return'<div class="sc"><div class="sl">'+s.l+'</div><div class="sv" style="color:'+s.c+'">'+s.v+'</div></div>'}).join(''));
+  var artH=sd.artLink?'<div style="font-size:0.68rem;color:#64748B;margin-bottom:0.3rem;font-weight:600;text-transform:uppercase">Artifact Link</div><div class="art-link-box"><span>🔗</span><a href="'+sd.artLink+'" target="_blank">'+sd.artLink+'</a></div>':'';
+  setHTML('asumm','<div style="font-size:0.62rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#38BDF8;margin-bottom:0.65rem">AICT Registration Summary</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:0.25rem 0.9rem;font-size:0.77rem;margin-bottom:0.65rem">'+[['Title',sd.taxTitle],['Provider',sd.taxProvider],['Asset Type',sd.taxAssetType],['Biz Owner',sd.taxBizOwner||'—'],['Tech Owner',sd.taxTechOwner||'—'],['P5','Colin Fleming'],['P5-1',sd.taxP51||'—']].map(function(p){return'<span style="color:#64748B">'+p[0]+':</span><span style="color:#CBD5E1;font-weight:600">'+(p[1]||'—')+'</span>'}).join('')+'</div>'+artH+'<div style="background:rgba(255,255,255,0.03);border-radius:0.4rem;padding:0.55rem 0.75rem;font-size:0.77rem;color:#94A3B8;display:flex;gap:1.25rem;flex-wrap:wrap;margin-top:0.5rem"><span><strong style="color:#CBD5E1">Owner:</strong> '+(sd.owner||'—')+'</span>'+(sd.dept?'<span><strong style="color:#CBD5E1">Team:</strong> '+sd.dept+'</span>':'')+'<span style="color:'+col+';font-weight:700">'+selCat+'</span></div>');
+}
+
+// ═══════════════════════════════════════════════════
+// LAYER 11 — SAVE / RESET
+// ═══════════════════════════════════════════════════
+async function saveSim(){
+  SECK.forEach(function(k){var e=el('gs-'+k);if(e)genSec[k]=e.value});
+  var res=sd.res;
+  var entry=mkEntry({assetName:sd.name,ownerName:sd.owner,persona:'Fulfiller',category:selCat,department:sd.dept,artifactLink:sd.artLink,taxTitle:sd.taxTitle,taxProvider:sd.taxProvider,taxAssetType:sd.taxAssetType,taxBizOwner:sd.taxBizOwner,taxTechOwner:sd.taxTechOwner,taxP51:sd.taxP51,sections:genSec},res);
+  await Storage.save(entry);
+  entries.unshift(entry);
+  updLC();
+  hide('bn-sav');show('savc');
+}
+
+function resetSim(){
+  sd={};genSec={};selCat='';selN=0;
+  ['s-title','s-biz','s-tech','s-p51','s-alink','s-desc','s-name','s-own','s-dept','s-runs','s-mins'].forEach(function(id){var e=el(id);if(e)e.value=''});
+  setHTML('ga','');hide('ga');show('gi');
+  var b0b=el('bn-0b');if(b0b)b0b.disabled=true;
+  document.querySelectorAll('#prov-pg .pi,#atype-pg .pi').forEach(function(p){p.classList.remove('on')});
+  var spo=el('s-prov-o');if(spo)spo.style.display='none';
+  document.querySelectorAll('.ccat').forEach(function(c){c.className='ccat'});
+  ['cc-p-ck','cc-a-ck','cc-c-ck'].forEach(function(k){var e=el(k);if(e)e.style.display='none'});
+  var b2=el('bn-2');if(b2)b2.disabled=true;
+  setText('pctd','');selN=0;
+  show('bn-sav');hide('savc');
+  mkNumPick();goStep('0a');mkSBar('0a');
+}
+
+// ═══════════════════════════════════════════════════
+// LAYER 12 — ADVANCED MODE CALCULATOR
+// ═══════════════════════════════════════════════════
+function advc(){
+  var a=cv('a-ad'),b=cv('a-ts'),c=cv('a-ac');
+  if(advRK==='Custom')advRate=cv('a-cr');
+  setText('rtd','Active: $'+advRate+'/hr');
+  if(!a||!b||!c||!advRate){hide('res-c');show('res-e');return}
+  var res=calv(a,b,c,advRate);
+  hide('res-e');show('res-c');
+  setHTML('res-c','<div class="fb"><span style="color:#64748B">// Monthly</span><br><span style="color:#63DF4E">A</span>='+a+' × <span style="color:#38BDF8">B</span>='+b+' × <span style="color:#FBBF24">C</span>='+c+'%<br><strong style="color:#fff">'+Math.round(res.mM)+' min → '+res.hM.toFixed(1)+' hrs</strong></div><div class="g3" style="margin-bottom:0.85rem"><div class="sc"><div class="sl">Minutes Saved</div><div class="sv">'+Math.round(res.mM)+'</div></div><div class="sc"><div class="sl">Hours Saved</div><div class="sv" style="color:#38BDF8">'+res.hM.toFixed(1)+'</div></div><div class="sc"><div class="sl">Monthly Value</div><div class="sv" style="color:#63DF4E">'+fu(res.vM)+'</div></div></div><hr class="d"><div class="g2" style="margin-bottom:0.85rem"><div class="sc"><div class="sl">Annual Hours</div><div class="sv">'+Math.round(res.hA)+'</div></div><div class="sc"><div class="sl">Annual Value</div><div class="sv" style="color:#63DF4E">'+fu(res.vA)+'</div></div></div><hr class="d"><div style="background:rgba(99,223,78,0.08);border:1.5px solid rgba(99,223,78,0.25);border-radius:0.65rem;padding:0.9rem 1.1rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem"><div><div style="font-size:1.75rem;font-weight:800;color:#63DF4E;line-height:1">'+ffe(res.ee)+'</div><div style="font-size:0.68rem;color:#94A3B8;margin-top:0.15rem">FTE Capacity Freed/Year</div></div><div style="text-align:right;font-size:0.7rem;color:#64748B">'+Math.round(res.hA)+' hrs ÷ 2,080<br>= '+ffe(res.ee)+' FTE/yr</div></div><button class="bp" onclick="saveAdv()">Save to Shared Log</button>');
+}
+
+async function saveAdv(){
+  var a=cv('a-ad'),b=cv('a-ts'),c=cv('a-ac');
+  if(!a||!b||!c||!advRate){alert('Fill all inputs first.');return}
+  var res=calv(a,b,c,advRate);
+  var entry=mkEntry({assetName:el('a-nm').value,ownerName:el('a-ow').value,persona:advPersona,category:advCat,department:el('a-dp').value,artifactLink:(el('a-al').value||''),sections:{}},res);
+  await Storage.save(entry);
+  entries.unshift(entry);
+  updLC();alert('Saved to Shared Log!');
+}
+
+// ═══════════════════════════════════════════════════
+// LAYER 13 — LOG RENDERING
+// ═══════════════════════════════════════════════════
+function updLC(){var lc=el('lc');if(lc)lc.textContent=entries.length}
+
+function updFilt(){
+  var moS={},owS={};
+  entries.forEach(function(e){
+    var d=new Date(e.submittedAt),em=d.toLocaleString('default',{month:'long'})+' '+d.getFullYear();
+    moS[em]=1;
+    if(e.taxBizOwner)owS[e.taxBizOwner]=1;
+    if(e.taxTechOwner)owS[e.taxTechOwner]=1;
+    if(e.ownerName)owS[e.ownerName]=1;
+  });
+  var mo=el('f-mo'),ow=el('f-ow');if(!mo||!ow)return;
+  var cm=mo.value,co=ow.value;
+  mo.innerHTML='<option>All</option>'+Object.keys(moS).sort().map(function(m){return'<option>'+m+'</option>'}).join('');
+  ow.innerHTML='<option>All</option>'+Object.keys(owS).sort().map(function(o){return'<option>'+o+'</option>'}).join('');
+  if(cm&&cm!=='All')mo.value=cm;if(co&&co!=='All')ow.value=co;
+}
+
+function clf(){['f-mo','f-ow','f-ct'].forEach(function(id){var e=el(id);if(e)e.value='All'});renderLog()}
+
+function renderLog(){
+  var fmo=el('f-mo'),fow=el('f-ow'),fct=el('f-ct');
+  if(!fmo||!fow||!fct)return;
+  var fm=fmo.value||'All',fo=fow.value||'All',fc=fct.value||'All';
+  var hasF=fm!=='All'||fo!=='All'||fc!=='All';
+  var bclf=el('btn-clf');if(bclf)bclf.style.display=hasF?'inline-block':'none';
+  var filt=entries.filter(function(e){
+    var d=new Date(e.submittedAt),em=d.toLocaleString('default',{month:'long'})+' '+d.getFullYear();
+    return(fm==='All'||em===fm)&&(fo==='All'||e.taxBizOwner===fo||e.taxTechOwner===fo||e.ownerName===fo)&&(fc==='All'||e.category===fc);
+  });
+  var totM=filt.reduce(function(s,e){return s+(e.valueMonthly||0)},0);
+  var totA=filt.reduce(function(s,e){return s+(e.valueAnnual||0)},0);
+  var totE=filt.reduce(function(s,e){return s+(e.ee||0)},0);
+  setHTML('log-sc',[{l:'AI Assets',v:String(filt.length),s:'filtered',c:'#fff'},{l:'Total Monthly',v:fu(totM),s:'across filtered',c:'#63DF4E'},{l:'Total Annual',v:fu(totA),s:'annualized',c:'#63DF4E'},{l:'Total EE',v:ffe(totE),s:'FTE/yr',c:'#38BDF8'}].map(function(s){return'<div class="sc"><div class="sl">'+s.l+'</div><div class="sv" style="color:'+s.c+'">'+s.v+'</div><div class="ss">'+s.s+'</div></div>'}).join(''));
+  setText('eb',filt.length+(filt.length===1?' entry':' entries'));
+  var rows=el('lr'),empty=el('le'),gt=el('gtot');
+  if(!rows)return;
+  rows.innerHTML='';
+  if(filt.length===0){if(empty)empty.style.display='block';if(gt)gt.style.display='none';return}
+  if(empty)empty.style.display='none';
+  filt.forEach(function(e){
+    var cv2=cc(e.category);
+    var row=document.createElement('div');row.className='lrow';
+    var artInline=e.artifactLink?'<div style="margin-top:3px"><a href="'+e.artifactLink+'" target="_blank" onclick="event.stopPropagation()" style="color:#38BDF8;font-size:0.68rem;font-weight:600;text-decoration:none">🔗 Open Artifact</a></div>':'';
+    row.innerHTML='<div><div style="font-weight:700;font-size:0.875rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff">'+(e.assetName||'—')+'</div>'+artInline+'</div>'+'<div style="display:flex;flex-wrap:wrap;gap:0.25rem;align-items:flex-start"><span class="bdg" style="background:'+cv2.bg+';color:'+cv2.c+'">'+e.category+'</span>'+(e.taxTitle?'<span class="bdg b" style="font-size:0.52rem">Reg</span>':'')+(e.sections&&Object.keys(e.sections).length?'<span class="bdg g" style="font-size:0.52rem">AI</span>':'')+'</div>'+'<div style="font-size:0.72rem;color:#94A3B8">'+fd(e.submittedAt)+'</div>'+'<div style="font-size:0.75rem;color:#CBD5E1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(e.taxBizOwner||e.ownerName||'—')+'</div>'+'<div style="font-size:0.75rem;color:#CBD5E1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(e.taxTechOwner||'—')+'</div>'+'<div style="font-weight:800;font-size:0.84rem;color:'+cv2.c+';text-align:right">'+fu(e.valueMonthly)+'</div>'+'<div style="font-weight:800;font-size:0.84rem;color:'+cv2.c+';text-align:right">'+fu(e.valueAnnual)+'</div>'+'<div style="font-weight:700;font-size:0.84rem;color:#38BDF8;text-align:right">'+ffe(e.ee)+'</div>';
+    var chev=document.createElement('span');chev.style.cssText='display:block;text-align:center;color:#64748B;font-size:0.77rem;margin-top:3px';chev.textContent='▾';row.appendChild(chev);
+    var exp=document.createElement('div');exp.className='exp';exp.style.display='none';exp.innerHTML=bldExp(e);
+    row.onclick=function(){var op=exp.style.display!=='none';exp.style.display=op?'none':'block';row.classList.toggle('open',!op);chev.style.transform=op?'':'rotate(180deg)'};
+    rows.appendChild(row);rows.appendChild(exp);
+  });
+  if(gt){gt.style.display='flex';setText('gtl','GRAND TOTAL — '+filt.length+' AI '+(filt.length===1?'asset':'assets'));setHTML('gtv',[{l:'Total Monthly',v:fu(totM),c:'#63DF4E'},{l:'Total Annual',v:fu(totA),c:'#63DF4E'},{l:'Total EE',v:ffe(totE),c:'#38BDF8'}].map(function(g){return'<div style="text-align:right"><div style="font-size:0.58rem;color:#64748B;font-weight:700;text-transform:uppercase">'+g.l+'</div><div style="font-size:0.875rem;font-weight:800;color:'+g.c+'">'+g.v+'</div></div>'}).join(''))}
+}
+
+function bldExp(e){
+  var html='<div class="exph" style="margin-top:0">Value Tracking</div><div style="display:grid;grid-template-columns:repeat(6,1fr);gap:0.4rem;margin-bottom:0.85rem">';
+  [{l:'A (Runs)',v:Math.round(e.a),c:'#63DF4E'},{l:'B (Min/run)',v:e.b,c:'#38BDF8'},{l:'C (%)',v:(e.c||0).toFixed(1)+'%',c:'#FBBF24'},{l:'Rate',v:'$'+e.rate,c:'#CBD5E1'},{l:'Monthly $',v:fu(e.valueMonthly),c:cc(e.category).c},{l:'Annual $',v:fu(e.valueAnnual),c:cc(e.category).c}].forEach(function(x){html+='<div style="background:rgba(255,255,255,0.03);border-radius:0.4rem;padding:0.45rem 0.55rem;text-align:center"><div style="font-size:0.56rem;color:#64748B;font-weight:700;text-transform:uppercase;margin-bottom:0.15rem">'+x.l+'</div><div style="font-size:0.84rem;font-weight:800;color:'+x.c+'">'+x.v+'</div></div>'});
+  html+='</div>';
+  if(e.artifactLink){html+='<div class="exph" style="color:#38BDF8">Artifact Link</div><div class="art-link-box"><span>🔗</span><a href="'+e.artifactLink+'" target="_blank">'+e.artifactLink+'</a></div>'}
+  if(e.taxTitle||e.taxProvider||e.taxAssetType){
+    html+='<div class="exph" style="color:#38BDF8">AICT Taxonomy</div><div class="tgrid">';
+    [['Title',e.taxTitle],['Provider',e.taxProvider],['Asset Type',e.taxAssetType],['Biz Owner',e.taxBizOwner],['Tech Owner',e.taxTechOwner],['P5',e.taxP5||'Colin Fleming'],['P5-1',e.taxP51],['Owner',e.ownerName],['Department',e.department]].forEach(function(p){html+='<div class="tcell"><div class="tl">'+p[0]+'</div><div class="tv">'+(p[1]||'—')+'</div></div>'});
+    html+='</div>';
+  }
+  if(e.sections&&Object.keys(e.sections).length){
+    html+='<div class="exph" style="color:#63DF4E">AI-Generated Sections</div>';
+    SECK.forEach(function(k,i){if(e.sections[k])html+='<div class="scell"><div class="sl2">'+SECL[i]+'</div><div class="st2">'+e.sections[k]+'</div></div>'});
+  }
+  html+='<div style="display:flex;justify-content:flex-end;padding-top:0.65rem;border-top:1px solid rgba(255,255,255,0.08);margin-top:0.5rem"><button class="bo red" onclick="delEnt(\''+e.id+'\')" >Delete</button></div>';
+  return html;
+}
+
+async function delEnt(id){
+  if(!confirm('Delete this entry?'))return;
+  entries=entries.filter(function(e){return e.id!==id});
+  await Storage.delete(id);
+  updLC();updFilt();renderLog();
+}
+
+// ═══════════════════════════════════════════════════
+// LAYER 14 — GOOGLE SHEETS CONNECTION UI
+// ═══════════════════════════════════════════════════
+
+async function refreshEntries(){
+  Storage._updateStatus('amber', 'Refreshing from shared storage...');
+  var btns=document.querySelectorAll('[onclick="refreshEntries()"]');
+  btns.forEach(function(b){b.textContent='↻ Loading...';b.disabled=true});
+  var data=await Storage.load();
+  entries=data||[];
+  updLC();updFilt();renderLog();
+  btns.forEach(function(b){b.textContent='↻ Refresh';b.disabled=false});
+  if(data && data.length >= 0){
+    Storage._updateStatus('connected', 'Connected — ' + entries.length + ' entr' + (entries.length===1?'y':'ies') + ' loaded');
+  } else {
+    Storage._updateStatus('red', 'Could not reach shared storage');
+  }
+}
+
+
+// ═══════════════════════════════════════════════════
+// LAYER 15 — CSV DOWNLOAD
+// ═══════════════════════════════════════════════════
+function dlCSV(){
+  var fmo=el('f-mo'),fow=el('f-ow'),fct=el('f-ct');
+  var fmv=fmo?fmo.value:'All',fov=fow?fow.value:'All',fcv=fct?fct.value:'All';
+  var filt=entries.filter(function(e){var d=new Date(e.submittedAt),em=d.toLocaleString('default',{month:'long'})+' '+d.getFullYear();return(fmv==='All'||em===fmv)&&(fov==='All'||e.taxBizOwner===fov||e.taxTechOwner===fov||e.ownerName===fov)&&(fcv==='All'||e.category===fcv)});
+  function esc(v){var s=String(v==null?'':v);return(s.indexOf(',')!==-1||s.indexOf('"')!==-1||s.indexOf('\n')!==-1)?'"'+s.split('"').join('""')+'"':s}
+  function row(c){return c.map(esc).join(',')}
+  var totM=filt.reduce(function(s,e){return s+(e.valueMonthly||0)},0);
+  var totA=filt.reduce(function(s,e){return s+(e.valueAnnual||0)},0);
+  var totE=filt.reduce(function(s,e){return s+(e.ee||0)},0);
+  var lines=[row(['AICT Value Tracker Export']),row(['Date',new Date().toLocaleDateString()]),row(['Filters','Month:'+fmv+'|Owner:'+fov+'|Cat:'+fcv]),row([]),row(['SUMMARY']),row(['Total Assets',filt.length]),row(['Monthly $',Math.round(totM)]),row(['Annual $',Math.round(totA)]),row(['Total EE',totE.toFixed(2)]),row([]),row(['FULL DETAIL']),row(['Use Case','Category','Owner','Dept','Biz Owner','Tech Owner','P5','P5-1','Provider','Asset Type','Artifact Link','A','B','C%','Rate','Monthly Hrs','Monthly $','Annual Hrs','Annual $','EE','Description','Short Desc','Intended Use','Problem','Objectives','Outcomes','Submitted'])];
+  filt.forEach(function(e){lines.push(row([e.assetName||'',e.category||'',e.ownerName||'',e.department||'',e.taxBizOwner||'',e.taxTechOwner||'',e.taxP5||'Colin Fleming',e.taxP51||'',e.taxProvider||'',e.taxAssetType||'',e.artifactLink||'',e.a||0,e.b||0,(e.c||0).toFixed(1),e.rate||0,(e.hrSavedMonthly||0).toFixed(1),(e.valueMonthly||0).toFixed(0),(e.hrSavedAnnual||0).toFixed(1),(e.valueAnnual||0).toFixed(0),(e.ee||0).toFixed(2),e.sections?e.sections.description||'':'',e.sections?e.sections.shortDescription||'':'',e.sections?e.sections.intendedUse||'':'',e.sections?e.sections.problemStatement||'':'',e.sections?e.sections.businessObjectives||'':'',e.sections?e.sections.expectedOutcomes||'':'',fd(e.submittedAt)]))});
+  var blob=new Blob([lines.join('\n')],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download='AICT_Export_'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+// ═══════════════════════════════════════════════════
+// LAYER 16 — INIT
+// ═══════════════════════════════════════════════════
+async function testConnection(){
+  var out = document.getElementById('test-result');
+  if(!out) return;
+  out.style.display = 'block';
+  out.textContent = 'Testing...\n';
+
+  // Step 1: Test GET (read)
+  out.textContent += '1. Testing GET (read all entries)...\n';
+  try {
+    var res = await fetch(GS_URL + '?t=' + Date.now(), {method:'GET', mode:'cors', credentials:'omit'});
+    var text = await res.text();
+    out.textContent += '   Status: ' + res.status + '\n';
+    out.textContent += '   Response: ' + text.substring(0, 200) + '\n';
+    if(res.ok && text.startsWith('[')) {
+      out.textContent += '   ✅ GET working — sheet is connected\n\n';
+    } else {
+      out.textContent += '   ❌ GET failed — check Apps Script deployment\n\n';
+    }
+  } catch(e) {
+    out.textContent += '   ❌ GET error: ' + e.message + '\n\n';
+  }
+
+  // Step 2: Test POST save with a dummy entry
+  out.textContent += '2. Testing POST (save test entry)...\n';
+  try {
+    var testEntry = {
+      id: 'TEST_' + Date.now(),
+      submittedAt: new Date().toISOString(),
+      assetName: 'CONNECTION TEST — DELETE ME',
+      ownerName: 'Test',
+      persona: 'Test',
+      category: 'Productivity',
+      department: 'Test',
+      artifactLink: '',
+      a:1, b:1, c:100, rate:65,
+      hrSavedMonthly:0.017, valueMonthly:1.08,
+      hrSavedAnnual:0.2, valueAnnual:13,
+      ee:0.0001,
+      taxTitle:'Test', taxProvider:'Test', taxAssetType:'Test',
+      taxBizOwner:'Test', taxTechOwner:'Test',
+      taxP5:'Colin Fleming', taxP51:'Test',
+      sections:{}
+    };
+
+    // Try fetch POST first
+    var postRes = await fetch(GS_URL, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: 'payload=' + encodeURIComponent(JSON.stringify({action:'save', entry:testEntry}))
+    });
+    var postText = await postRes.text();
+    out.textContent += '   Status: ' + postRes.status + '\n';
+    out.textContent += '   Response: ' + postText.substring(0,200) + '\n';
+    if(postText.includes('"ok"') || postText.includes('ok')) {
+      out.textContent += '   ✅ POST working — entries will save to sheet\n';
+    } else {
+      out.textContent += '   ⚠️ POST response unexpected — check sheet manually\n';
+    }
+  } catch(e2) {
+    out.textContent += '   ❌ POST error: ' + e2.message + '\n';
+    out.textContent += '   → Will use iframe form fallback instead\n';
+  }
+
+  out.textContent += '\nDone. Check your Google Sheet for a test row.';
+}
+
+function init(){
+  // Load local entries first (instant)
+  entries = Storage._getLocal();
+  updLC();
+
+  // Init storage layer (loads GS URL, updates status)
+  Storage.init();
+
+  // Auto-load from shared Google Sheet on every open
+  Storage.load().then(function(data){
+    if(data && data.length > 0){
+      entries = data;
+      updLC();
+      Storage._updateStatus('connected', 'Connected — ' + entries.length + ' entr' + (entries.length === 1 ? 'y' : 'ies') + ' loaded from shared storage');
+    } else if(data && data.length === 0) {
+      Storage._updateStatus('connected', 'Connected — no entries yet. Be the first to save!');
+    } else {
+      Storage._updateStatus('red', 'Could not reach shared storage — showing local entries only');
+    }
+  }).catch(function(e){
+    Storage._updateStatus('red', 'Error: ' + (e.message || 'Could not reach shared storage'));
+  });
+
+  // Build UI
+  mkPills('prov-pg',PROVS,'',function(v){var spo=el('s-prov-o');if(spo)spo.style.display=v==='Other'?'block':'none'});
+  mkPills('atype-pg',ATYPES,'',function(){});
+  mkPills('ap-pg',['Agent','Developer','Fulfiller','Requestor','Other'],'Fulfiller',function(v){advPersona=v});
+  mkPills('ac-pg',['Productivity','ACV Impact','Cost Reduction'],'Productivity',function(v){advCat=v;advc()});
+
+  var rp=el('rt-pg');if(rp){
+    rp.innerHTML='';
+    [25,40,50,65,85,100].forEach(function(rv){
+      var b=document.createElement('button');b.className='pi'+(rv===65?' on':'');b.textContent='$'+rv+'/hr';
+      b.onclick=function(){rp.querySelectorAll('.pi').forEach(function(p){p.classList.remove('on')});b.classList.add('on');advRK=String(rv);advRate=rv;el('cr-row').style.display='none';advc()};
+      rp.appendChild(b);
+    });
+    var cb=document.createElement('button');cb.className='pi';cb.textContent='Custom';
+    cb.onclick=function(){rp.querySelectorAll('.pi').forEach(function(p){p.classList.remove('on')});cb.classList.add('on');advRK='Custom';el('cr-row').style.display='flex';advc()};
+    rp.appendChild(cb);
+  }
+
+  buildRef();
+  mkNumPick();
+  mkSBar('0a');
+}
+
+init();
+</script>
+</body>
+</html>
